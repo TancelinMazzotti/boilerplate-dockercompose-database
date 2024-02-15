@@ -1,0 +1,83 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: passwd
+    ports:
+      - 27017:27017
+
+  influx:
+    container_name: influx
+    image: influxdb:alpine
+    environment:
+      - DOCKER_INFLUXDB_INIT_USERNAME=influx
+      - DOCKER_INFLUXDB_INIT_PASSWORD=passwordlongsizerequired
+      - DOCKER_INFLUXDB_INIT_ORG=organization
+      - DOCKER_INFLUXDB_INIT_BUCKET=default
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=ajkjaozpijgfoaznopznecpoanfopjngf
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+    ports:
+      - 8096:8086
+
+  minio:
+    container_name: minio
+    image: 'bitnami/minio:latest'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+      - MINIO_DEFAULT_BUCKETS=default
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=passwd
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    # INFORMATION
+    # default username = default
+
+  nats:
+    container_name: nats
+    image: nats:latest
+    hostname: nats
+    ports:
+      - 4222:4222
+    command: "-DVV"
+    
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    # INFORMATION
+    # default username = admin
+    # default password = admin
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    restart: always
+    ports:
+      - 8090:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: ["start-dev"]
